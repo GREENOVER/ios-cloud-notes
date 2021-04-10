@@ -242,4 +242,3 @@ extension MemoListTableViewController: DropboxDownloadDelegate {
         self.tableView.reloadData()
     }
 }
-
