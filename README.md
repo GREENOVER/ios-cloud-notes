@@ -1,7 +1,8 @@
 # iOS Cloud Notes Application Project
 ### 클라우드 서버와 동기화 할 수 있는 메모 기능을 구현한 동기화 메모장 앱 프로젝트
+[Ground Rule](https://github.com/GREENOVER/ios-cloud-notes/blob/main/GroundRule.md)
 ***
-#### What have I done?
+#### What I learned✍️
 - JSON
 - ListView
 - Localization
@@ -17,7 +18,7 @@
 - Activity View
 - SPM (Swift Package Manager)
 
-#### What I learned
+#### What have I done🧑🏻‍💻
 - 뷰를 전부 코드로 구현해보고 오토레이아웃을 적용하였다. 
     - 충돌을 일으키지 않게 스토리보드 파일 삭제
 - 언어와 날짜에 대한 지역화를 구현하였다.
