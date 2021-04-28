@@ -139,6 +139,35 @@
         return attributedText
     }
   ```
+- 문제점 (7)
+  - 메모 내용의 타이틀과 바디를 정확하게 나눌 수 없는 문제 발생
+- 원인
+  - 엔터를 기준으로 타이틀과 바디를 나누어주었는데 엔터가 여러번 입력된다면 여러번 줄바꿈 후 바디가 들어가야하는데 이후 다시 메모를 보면 줄바꿈을 여러번해도 1번의 줄바꿈만 생긴다. 첫 엔터를 기준으로 나눴기에 발생하는 문제
+- 해결방안
+  - 고차함수 map을 사용하여 전체 텍스트를 판단하여 첫 인덱스만 타이틀로 그 후의 인덱스들은 바디에 문자열 병합을 통해 구현해주도록 수정하여 해결하였다.
+  ```swift
+  func splitString(of text: String) -> (String, String) {
+        var titleText: String = ""
+        var bodyText: String = ""
+
+        let fullText = text.split(separator: "\n").map { (value) -> String in
+            return String(value) }
+
+        switch fullText.count {
+        case 0:
+            titleText = ""
+            bodyText = ""
+        case 1:
+            titleText = fullText[0]
+        default:
+            titleText = fullText[0]
+            for i in 1...(fullText.count - 1) {
+                bodyText += (fullText[i] + "\n")
+            }
+        }
+        return (titleText, bodyText)
+    }
+  ```
 
 
 #### Thinking Point🤔
