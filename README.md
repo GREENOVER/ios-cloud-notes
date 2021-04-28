@@ -244,9 +244,53 @@
   XCTAssertEqual(memoList[3].lastModified, 202020, "It would fail")
   ```
 - 고민점 (6)
-  - ㅇ
-  ``:
-
+  - "rawValue를 붙이지 않고 좀 더 가독성이 좋게 사용할 수 있을까?"
+  ```swift
+  enum UserDefaultsKeys: String {
+    case selectedMemoIndexPathRow = "selectedMemoIndexPathRow"
+  ```
+- 원인 및 대책
+  - description을 이용하여 좀 더 코드를 읽는 입장을 고려하여 전달이 잘 될 수 있도록 수정해보았다.
+  ```swift
+  enum UserDefaultsKeys {
+    case selectedMemoIndexPathRow
+    case isCellSelected
+    
+    var description: String {
+        switch self {
+        case .selectedMemoIndexPathRow:
+            return "selectedMemoIndexPathRow"
+        case .isCellSelected:
+            return "isCellSelected"
+        }
+    }
+  }
+  ```
+- 고민점 (7)
+  - "비어있는지 파악할때 갯수 파악 VS imEmpty?"
+  ```swift
+  if CoreDataSingleton.shared.memoData.count != 0 {
+  ```
+- 원인 및 대책
+  - 카운트를 하여 조건을 비교해주는것보다 isEmpty를 사용하면 더 명확해진다.
+  ```swift
+  if !(CoreDataSingleton.shared.memoData.isEmpty) {
+  ```
+- 고민점 (8)
+  - "코어데이터의 CRUD를 구현할 때 결과에 대한 리턴을 Bool과 throws가 어떤 차이가 있을까?"
+- 원인 및 대책
+  - 단순히 Bool타입으로 true/false를 주는것보다 오류 예외처리를 하는것이 더 명확한 장점이 있다. 특히 CRUD같은 기능은 에러가 나는 조건이 다양히 throw 에러를 다뤄주게 될 경우 에러 처리를 해줄 시점을 선택적으로 정해줄 수 있고 다양한 에러에 대처할 수 있다.
+  ```swift
+  func save(content: String) throws {
+      guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+          throw MemoAppSystemError.unkowned
+      }
+  ...
+  ```
+- 고민점 (9)
+  - "의존성 관리 도구로 SPM을 선택하게 된 이유?"
+- 원인 및 대책
+  - 코코아팟, 카르타고같은 서드파티 도구보다는 애플에서 밀고있고 제공하기에 애플을 믿고 선택하게되었다. 코코아팟보다 아직 라이브러리에 대해 지원되지 않는 부분도 있지만 현재 프로젝트에서 필요한 Dropbox나 Alamofire같은 부분은 충분히 지원해준다. 의존성 관리 도구를 선정할때 팀원과 상의를 하는것이 중요하고 누가 관리의 주체가 될지 정하는것도 필요하다고 느꼈다.
 
 
 
