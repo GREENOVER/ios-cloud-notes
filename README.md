@@ -45,11 +45,69 @@
 - 해결방안
   - 아래와 같이 타겟 빌드 세팅에서 info.plist.File 파일 위치를 해당 그룹화한 폴더 아래로 변경해주어 해결하였다.
   <img width="768" alt="스크린샷 2021-04-28 오후 1 20 12" src="https://user-images.githubusercontent.com/72292617/116346084-775ffb00-a824-11eb-8b9b-94f0ca9a1317.png">
+- 문제점 (2)
+  - 텍스트뷰(메모 컨텐츠뷰)가 선택된 상태에서 기기 사이즈를 Regular -> Compact로 변환 시 텍스트뷰가 아닌 테이블뷰(메모 리스트뷰)로 나타나는 문제
+- 원인
+  - 텍스트뷰(메모 컨텐츠뷰)가 선택된 상태에서 기기 사이즈를 Regular -> Compact로 변환 시 텍스트뷰가 아닌 테이블뷰(메모 리스트뷰)로 나타나는 문제
+  - 
 
 
 
 #### Thinking Point🤔
-
+- 고민점 (1)
+  - "UITextView, dataDetectorTypes & isEditable"
+  ```swift
+  @objc func textViewDidTapped(_ recognizer: UITapGestureRecognizer) {
+      if "UIDataDetectorTypes을 터치했을때" == nil {
+          return
+      } else if let textView = recognizer.view as? UITextView {
+          var location = recognizer.location(in: textView)
+          location.x -= textView.textContainerInset.left
+          location.y -= textView.textContainerInset.top
+          
+          placeCursor(textView, location)
+          makeTextViewEditable()
+      }
+  }
+  ```
+  dateDetectorTypes를 터치했을때 기본적으로 구현된 방식으로(URL이면 사파리를 열고, 전화번호면 메세지를 열고..) 동작하고 다른 곳 터치 시 터치 지점에서 편집 가능하도록 커서 코드를 작성하려고 했는데 해당 터치 시 조건에 어떤 코드가 들어와야 원하는 기능 동작을 할 수 있을까?
+- 원인 및 대책
+  - sholdInteractWith deleate를 활용해봤는데 원하는 기능을 수행해주지 않았다. 이에 기존 코드를 아래와 같이 재구현하여 스크린 터치 시 그 위치를 CGPoint로 알아내 다음 동작을 구분하는 조건문으로 변경하였다.
+  ```swift
+  @objc func textViewDidTapped(_ recognizer: UITapGestureRecognizer) {
+        if memoTextView.isEditable { return }
+        
+        guard let textView = recognizer.view as? UITextView else {
+            return
+        }
+        let tappedLocation = recognizer.location(in: textView)
+        let glyphIndex = textView.layoutManager.glyphIndex(for: tappedLocation, in: textView.textContainer)
+        
+        if glyphIndex < textView.textStorage.length,
+           textView.textStorage.attribute(NSAttributedString.Key.link, at: glyphIndex, effectiveRange: nil) == nil {
+            placeCursor(textView, tappedLocation)
+            makeTextViewEditable()
+            
+            navigationItem.rightBarButtonItems?.insert(finishButton, at: 0)
+        }
+        
+        if glyphIndex >= textView.textStorage.length {
+            makeTextViewEditable()
+        }
+    }
+    
+    private func placeCursor(_ myTextView: UITextView, _ location: CGPoint) {
+        if let tapPosition = myTextView.closestPosition(to: location) {
+            let uiTextRange = myTextView.textRange(from: tapPosition, to: tapPosition)
+            
+            if let start = uiTextRange?.start, let end = uiTextRange?.end {
+                let loc = myTextView.offset(from: myTextView.beginningOfDocument, to: tapPosition)
+                let length = myTextView.offset(from: start, to: end)
+                myTextView.selectedRange = NSMakeRange(loc, length)
+            }
+        }
+    }
+  ```
 
 
 
