@@ -91,9 +91,54 @@
   위와 같이 UIButton으로 구성하면되는데 UIBarButtonItem으로 구성하면 액션동작이 되지 않는 문제가 발생하였다.
 - 원인
   - VC 초기화 관련문제였다. UIBarButtonItem을 초기화하는 시점이 네비게이션 바 버튼이 만들어지기전에 동작하여 액션 동작이 제대로 되지 않았다.
-- 아ㄹ
-  - VC 초기화 관련문제였다. UIBarButtonItem을 초기화하는 시점이 네비게이션 바 버튼이 만들어지기전에 동작하여 액션 동작이 제대로 되지 않았ㅎ
-  - VC 초기화 관련문제였다. UIBarButtonItem을 초기화하는 시점이 네비게이션 바 버튼이 만들어지기전에 동작하여 액션 동작이 제대로 되지 않았다.
+- 해결방안
+  - 해당 초기화 시점을 아래와 같이 로직을 수정하고 안전하게 lazy 키워드를 붙여 호출 시 생성되도록 수정하였다.
+  ```swift
+  class MemoListTableViewController: UITableViewController {
+      lazy var enrollButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(createMemo))
+  ...
+  private func configureNavigationBar() {
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        
+        navigationItem.title = "메모"
+        navigationItem.rightBarButtonItem = enrollButton
+        navigationItem.searchController = searchController
+  }
+  override func viewDidLoad() {
+      super.viewDidLoad()
+      configureNavigationBar()
+  ...
+  ```
+- 문제점 (6)
+  - 메모를 작성하고 리스트로 돌아오게되면 제목과 내용이 의도대로 나눠지지 않는 문제 발생
+- 원인
+  - textView에서 title과 body를 구분지어주는 로직에서의 오류
+- 해결방안
+  - 아래와 같이 텍스트를 엔터 시점을 분기로 제목과 내용을 구분지어주고 해당 텍스트의 색/ 크기등을 각각 설정해주어 좀 더 메모스럽게 만들었다.
+  ```swift
+  func makeAttributedString(text: String)  -> NSAttributedString  {
+        let attributedText = NSMutableAttributedString(string: text)
+        let splitedString = text.split(separator: "\n")
+        let titleFontSize = UIFont.preferredFont(forTextStyle: .largeTitle)
+        let bodyFontSize = UIFont.preferredFont(forTextStyle: .body)
+        let textColor = UIColor(named: "TextColor") ?? .gray
+        let enterCount = countEnter(text: text)
+        
+        guard let title = splitedString.first else {
+            attributedText.addAttributes([.font: titleFontSize, .foregroundColor: textColor], range: NSRange(location: 0, length: text.count))
+            return attributedText
+        }
+        
+        let titleCount = title.count + enterCount
+        let bodyCount = text.count - titleCount
+        
+        attributedText.addAttributes([.font: titleFontSize, .foregroundColor: textColor], range: NSRange(location: 0, length: titleCount))
+        attributedText.addAttributes([.font: bodyFontSize, .foregroundColor: textColor], range: NSRange(location: titleCount, length: bodyCount))
+        
+        return attributedText
+    }
+  ```
 
 
 #### Thinking Point🤔
@@ -198,6 +243,9 @@
   // 실패할 테스트
   XCTAssertEqual(memoList[3].lastModified, 202020, "It would fail")
   ```
+- 고민점 (6)
+  - ㅇ
+  ``:
 
 
 
