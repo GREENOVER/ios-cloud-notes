@@ -33,3 +33,27 @@
 - 유저 디폴트를 정의하여 선택된 셀의 인덱스를 저장하도록 구현하였다.
 - 디코드에 대한 테스트 메서드를 구현하여 mock data로 테스트를 진행하였다.
 - 의존성 관리도구에 대해 학습하고 팀원과 협의하여 SPM으로 채택하고 진행하였다.
+
+
+
+
+#### Trouble Shooting👨‍🔧
+- 문제점 (1)
+  - Supporting 파일들을 폴더화 시켜 이동한 후 앱을 빌드할 시 컴파일 오류가 나는 문제가 발생
+- 원인
+  - info.plist의 위치가 변경되어 찾을 수 없다는 에러 메시지를 토대로 프로젝트 설정에서 info.plist 파일의 위치가 잘못되어 발생하였다.
+- 해결방안
+  - 아래와 같이 타겟 빌드 세팅에서 info.plist.File 파일 위치를 해당 그룹화한 폴더 아래로 변경해주어 해결하였다.
+  <img width="768" alt="스크린샷 2021-04-28 오후 1 20 12" src="https://user-images.githubusercontent.com/72292617/116346084-775ffb00-a824-11eb-8b9b-94f0ca9a1317.png">
+
+
+
+#### Thinking Point🤔
+
+
+
+
+
+#### InApp📱
+![InApp_1](https://user-images.githubusercontent.com/72292617/116345618-74183f80-a823-11eb-95bc-8416a8a7f536.gif)
+![InApp_2](https://user-images.githubusercontent.com/72292617/116345828-dcffb780-a823-11eb-8887-45087d08ce5f.gif)
